@@ -29,6 +29,7 @@
   "homepage": "https://github.com/Erick-NGS/node-clean-tdd#readme",
   "devDependencies": {
     "husky": "^6.0.0",
+    "jest": "^26.6.3",
     "lint-staged": "^11.0.0",
     "nodemon": "^2.0.7",
     "standard": "^16.0.3"
