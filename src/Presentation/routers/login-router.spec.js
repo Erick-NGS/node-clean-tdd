@@ -91,6 +91,34 @@ describe('LoginRouter', () => {
     expect(httpRes.statusCode).toBe(401)
     expect(httpRes.body).toEqual(new UnauthorizedError())
   })
+
+  test('Should return 500 if there\'s no AuthUseCase is provided', () => {
+    const sut = new LoginRouter()
+    const httpReq = {
+      body: {
+        email: 'test@test.com',
+        password: 'fasfasfsa'
+      }
+    }
+    const httpRes = sut.route(httpReq)
+
+    expect(httpRes.statusCode).toBe(500)
+  })
+
+  test('Should return 500 if there\'s no AuthUseCase auth method', () => {
+    class AuthUseCaseSpy { }
+    const authUseCaseSpy = new AuthUseCaseSpy()
+    const sut = new LoginRouter(authUseCaseSpy)
+    const httpReq = {
+      body: {
+        email: 'test@test.com',
+        password: 'fasfasfsa'
+      }
+    }
+    const httpRes = sut.route(httpReq)
+
+    expect(httpRes.statusCode).toBe(500)
+  })
 })
 
 // sut = System Under Test
