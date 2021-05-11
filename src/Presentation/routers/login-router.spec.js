@@ -2,12 +2,25 @@ const LoginRouter = require('./login-router')
 const MissingParamErr = require('../helpers/missingParamError')
 
 const makeSut = () => {
-  return new LoginRouter()
+  class AuthUseCaseSpy {
+    auth (email, password) {
+      this.email = email
+      this.password = password
+    }
+  }
+
+  const authUseCaseSpy = new AuthUseCaseSpy()
+  const sut = new LoginRouter(authUseCaseSpy)
+
+  return {
+    sut,
+    authUseCaseSpy
+  }
 }
 
 describe('LoginRouter', () => {
   test('Should return 400 if there\'s no email', () => {
-    const sut = makeSut()
+    const { sut } = makeSut()
     const httpReq = {
       body: {
         password: 'sfasfwq'
@@ -20,7 +33,7 @@ describe('LoginRouter', () => {
   })
 
   test('Should return 400 if there\'s no password', () => {
-    const sut = makeSut()
+    const { sut } = makeSut()
     const httpReq = {
       body: {
         email: 'test@test.com'
@@ -33,7 +46,7 @@ describe('LoginRouter', () => {
   })
 
   test('Should return 500 if there\'s no httpRequest', () => {
-    const sut = makeSut()
+    const { sut } = makeSut()
 
     const httpRes = sut.route()
 
@@ -41,20 +54,27 @@ describe('LoginRouter', () => {
   })
 
   test('Should return 500 if there\'s no httpRequest body', () => {
-    const sut = makeSut()
+    const { sut } = makeSut()
     const httpReq = {}
     const httpRes = sut.route(httpReq)
 
     expect(httpRes.statusCode).toBe(500)
   })
 
-  // test('Should call AuthUseCase with the correct params', () => {
-  //   const sut = makeSut()
-  //   const httpReq = {}
-  //   const httpRes = sut.route(httpReq)
+  test('Should call AuthUseCase with the correct params', () => {
+    const { sut, authUseCaseSpy } = makeSut()
+    const httpReq = {
+      body: {
+        email: 'test@test.com',
+        password: 'fasfasfsa'
+      }
+    }
 
-  //   expect(httpRes.statusCode).toBe(500)
-  // })
+    sut.route(httpReq)
+
+    expect(authUseCaseSpy.email).toBe(httpReq.body.email)
+    expect(authUseCaseSpy.password).toBe(httpReq.body.password)
+  })
 })
 
 // sut = System Under Test
