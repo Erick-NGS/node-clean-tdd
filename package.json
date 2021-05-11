@@ -4,8 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "jest",
-    "fixDev": "npx standard --fix&&npm test",
+    "test": "jest --watchAll",
+    "test:staged": "jest",
+    "fixTest": "npx standard --fix&&npm test",
     "prepare": "husky install"
   },
   "standard": {
