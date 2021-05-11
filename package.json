@@ -6,16 +6,6 @@
   "scripts": {
     "test": "jest"
   },
-  "lint-staged": {
-    "*.js": [
-      "standard"
-    ]
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged"
-    }
-  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Erick-NGS/node-clean-tdd.git"
