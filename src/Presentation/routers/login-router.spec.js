@@ -1,20 +1,19 @@
 const LoginRouter = require('./login-router')
-const MissingParamErr = require('../helpers/missingParamError')
+const MissingParamError = require('../helpers/missingParamError')
+const InvalidParamError = require('../helpers/invalidParamError')
 const UnauthorizedError = require('../helpers/unauthorizedError')
 const ServerError = require('../helpers/internalServerError')
 
 const makeSut = () => {
   const authUseCaseSpy = factoryAuthUseCase()
-  authUseCaseSpy.accessToken = 'valid_token'
-  /*
-  Mocar o valor esperado na classe utilizada,
-  para não haver necessidade de mocar em mais de uma chamada
-  */
-  const sut = new LoginRouter(authUseCaseSpy)
+  const emailValidatorSpy = factoryEmailValidator()
+
+  const sut = new LoginRouter(authUseCaseSpy, emailValidatorSpy)
 
   return {
     sut,
-    authUseCaseSpy
+    authUseCaseSpy,
+    emailValidatorSpy
   }
 }
 
@@ -27,7 +26,24 @@ const factoryAuthUseCase = () => {
       return this.accessToken
     }
   }
-  return new AuthUseCaseSpy()
+  const authUseCaseSpy = new AuthUseCaseSpy()
+  authUseCaseSpy.accessToken = 'valid_token'
+  /*
+  Mocar o valor esperado na classe utilizada,
+  para não haver necessidade de mocar em mais de uma chamada
+  */
+  return authUseCaseSpy
+}
+
+const factoryEmailValidator = () => {
+  class EmailValidatorSpy {
+    isValid (email) {
+      return this.isEmailValid
+    }
+  }
+  const emailValidatorSpy = new EmailValidatorSpy()
+  emailValidatorSpy.isEmailValid = true
+  return emailValidatorSpy
 }
 
 const helperAuthUseCaseError = () => {
@@ -50,7 +66,7 @@ describe('LoginRouter', () => {
     const httpRes = await sut.route(httpReq)
 
     expect(httpRes.statusCode).toBe(400)
-    expect(httpRes.body).toEqual(new MissingParamErr('email'))
+    expect(httpRes.body).toEqual(new MissingParamError('email'))
   })
 
   test('Should return 400 if there\'s no password', async () => {
@@ -63,7 +79,7 @@ describe('LoginRouter', () => {
     const httpRes = await sut.route(httpReq)
 
     expect(httpRes.statusCode).toBe(400)
-    expect(httpRes.body).toEqual(new MissingParamErr('password'))
+    expect(httpRes.body).toEqual(new MissingParamError('password'))
   })
 
   test('Should return 500 if there\'s no httpRequest', async () => {
@@ -172,6 +188,21 @@ describe('LoginRouter', () => {
     const httpRes = await sut.route(httpReq)
 
     expect(httpRes.statusCode).toBe(500)
+  })
+
+  test('Should return 400 if there\'s an invalid email', async () => {
+    const { sut, emailValidatorSpy } = makeSut()
+    emailValidatorSpy.isEmailValid = false
+    const httpReq = {
+      body: {
+        email: 'wrong_email.com',
+        password: 'sfasfwq'
+      }
+    }
+    const httpRes = await sut.route(httpReq)
+
+    expect(httpRes.statusCode).toBe(400)
+    expect(httpRes.body).toEqual(new InvalidParamError('email'))
   })
 })
 
