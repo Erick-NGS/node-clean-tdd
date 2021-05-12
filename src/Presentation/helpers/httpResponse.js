@@ -23,9 +23,10 @@ module.exports =
       }
     }
 
-    static ok () {
+    static ok (token) {
       return {
-        statusCode: 200
+        statusCode: 200,
+        body: token
       }
     }
   }
