@@ -4,8 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "npx standard --fix&&jest --watchAll",
-    "test:staged": "jest --passWithNoTests",
+    "test": "npx standard --fix&&jest --watch --silent --colors",
+    "test:staged": "jest --passWithNoTests --findRelatedTests --silent --noStackTrace",
     "prepare": "husky install"
   },
   "standard": {
