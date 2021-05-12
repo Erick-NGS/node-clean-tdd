@@ -38,6 +38,7 @@ const factoryAuthUseCase = () => {
 const factoryEmailValidator = () => {
   class EmailValidatorSpy {
     isValid (email) {
+      this.email = email
       return this.isEmailValid
     }
   }
@@ -257,6 +258,20 @@ describe('LoginRouter', () => {
     const httpRes = await sut.route(httpReq)
 
     expect(httpRes.statusCode).toBe(500)
+  })
+
+  test('Should call EmailValidator with the correct params', async () => {
+    const { sut, emailValidatorSpy } = makeSut()
+    const httpReq = {
+      body: {
+        email: 'test@test.com',
+        password: 'fasfasfsa'
+      }
+    }
+
+    await sut.route(httpReq)
+
+    expect(emailValidatorSpy.email).toBe(httpReq.body.email)
   })
 })
 
