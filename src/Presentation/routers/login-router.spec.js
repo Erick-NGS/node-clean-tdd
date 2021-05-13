@@ -1,8 +1,5 @@
 const LoginRouter = require('./login-router')
-const MissingParamError = require('../helpers/missingParamError')
-const InvalidParamError = require('../helpers/invalidParamError')
-const UnauthorizedError = require('../helpers/unauthorizedError')
-const ServerError = require('../helpers/internalServerError')
+const { MissingParamError, InvalidParamError, UnauthorizedError, InternalServerError } = require('../errors')
 
 const makeSut = () => {
   const authUseCaseSpy = factoryAuthUseCase()
@@ -29,7 +26,7 @@ const factoryAuthUseCase = () => {
   const authUseCaseSpy = new AuthUseCaseSpy()
   authUseCaseSpy.accessToken = 'valid_token'
   /*
-  Mocar o valor esperado na classe utilizada,
+  Mocar o valor "feliz" esperado na classe utilizada,
   para não haver necessidade de mocar em mais de uma chamada
   */
   return authUseCaseSpy
@@ -98,7 +95,7 @@ describe('LoginRouter', () => {
     const httpRes = await sut.route()
 
     expect(httpRes.statusCode).toBe(500)
-    expect(httpRes.body).toEqual(new ServerError())
+    expect(httpRes.body).toEqual(new InternalServerError())
   })
 
   test('Should return 500 if there\'s no httpRequest body', async () => {
@@ -107,7 +104,7 @@ describe('LoginRouter', () => {
     const httpRes = await sut.route(httpReq)
 
     expect(httpRes.statusCode).toBe(500)
-    expect(httpRes.body).toEqual(new ServerError())
+    expect(httpRes.body).toEqual(new InternalServerError())
   })
 
   test('Should call AuthUseCase with the correct params', async () => {
@@ -167,7 +164,7 @@ describe('LoginRouter', () => {
     const httpRes = await sut.route(httpReq)
 
     expect(httpRes.statusCode).toBe(500)
-    expect(httpRes.body).toEqual(new ServerError())
+    expect(httpRes.body).toEqual(new InternalServerError())
   })
 
   test('Should return 500 if there\'s no AuthUseCase auth method', async () => {
@@ -183,7 +180,7 @@ describe('LoginRouter', () => {
     const httpRes = await sut.route(httpReq)
 
     expect(httpRes.statusCode).toBe(500)
-    expect(httpRes.body).toEqual(new ServerError())
+    expect(httpRes.body).toEqual(new InternalServerError())
   })
 
   test('Should return 500 if AuthUseCase throws', async () => {
@@ -227,7 +224,7 @@ describe('LoginRouter', () => {
     const httpRes = await sut.route(httpReq)
 
     expect(httpRes.statusCode).toBe(500)
-    expect(httpRes.body).toEqual(new ServerError())
+    expect(httpRes.body).toEqual(new InternalServerError())
   })
 
   test('Should return 500 if there\'s no EmailValidator isValid method', async () => {
@@ -242,7 +239,7 @@ describe('LoginRouter', () => {
     const httpRes = await sut.route(httpReq)
 
     expect(httpRes.statusCode).toBe(500)
-    expect(httpRes.body).toEqual(new ServerError())
+    expect(httpRes.body).toEqual(new InternalServerError())
   })
 
   test('Should return 500 if EmailValidator throws', async () => {
