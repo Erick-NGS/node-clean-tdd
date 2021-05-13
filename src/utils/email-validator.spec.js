@@ -1,13 +1,9 @@
+const EmailValidator = require('./email-validator')
+
 const validator = require('validator')
 
 const makeSut = () => {
   return new EmailValidator()
-}
-
-class EmailValidator {
-  isValid (email) {
-    return validator.isEmail(email)
-  }
 }
 
 describe('EmailValidator', () => {
