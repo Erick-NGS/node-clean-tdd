@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "npx standard --fix&&jest --silent --colors",
-    "test:unit": "npx standard --fix&&npm test -- --watch",
+    "test:unit": "npx standard --fix&&npm test -- --watchAll -c jest.unit.config.js",
     "test:staged": "npm test -- --findRelatedTests",
     "test:ci": "npm test -- --coverage",
     "coverage": "npx standard --fix&&jest --coverage",
