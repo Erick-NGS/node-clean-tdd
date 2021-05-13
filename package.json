@@ -35,5 +35,7 @@
     "standard": "^16.0.3",
     "husky": "^6.0.0"
   },
-  "dependencies": {}
+  "dependencies": {
+    "validator": "^13.6.0"
+  }
 }
