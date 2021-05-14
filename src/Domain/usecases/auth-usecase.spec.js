@@ -2,6 +2,15 @@ const { MissingParamError, InvalidParamError } = require('../../utils/errors')
 const AuthUseCase = require('./auth-usecase')
 
 const makeSut = () => {
+  class EncrypterSpy {
+    async compare (password, hashedPassword) {
+      this.password = password
+      this.hashedPassword = hashedPassword
+    }
+  }
+
+  const encrypterSpy = new EncrypterSpy()
+
   class LoadUserEmailOnRepoSpy {
     async load (email) {
       this.email = email
@@ -11,10 +20,10 @@ const makeSut = () => {
   }
 
   const loadUserEmailOnRepoSpy = new LoadUserEmailOnRepoSpy()
-  loadUserEmailOnRepoSpy.user = {}
-  const sut = new AuthUseCase(loadUserEmailOnRepoSpy)
+  loadUserEmailOnRepoSpy.user = { password: 'hashed' }
+  const sut = new AuthUseCase(loadUserEmailOnRepoSpy, encrypterSpy)
 
-  return { sut, loadUserEmailOnRepoSpy }
+  return { sut, loadUserEmailOnRepoSpy, encrypterSpy }
 }
 
 describe('Auth UseCase', () => {
@@ -66,5 +75,13 @@ describe('Auth UseCase', () => {
     const accessToken = await sut.auth('any@mail.com', 'bad_pass')
 
     expect(accessToken).toBeNull()
+  })
+
+  test('Should call Encrypter with correct values', async () => {
+    const { sut, loadUserEmailOnRepoSpy, encrypterSpy } = makeSut()
+    await sut.auth('any@mail.com', 'dafadsfsdf')
+
+    expect(encrypterSpy.password).toBe('dafadsfsdf')
+    expect(encrypterSpy.hashedPassword).toBe(loadUserEmailOnRepoSpy.user.password)
   })
 })
