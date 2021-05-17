@@ -1,4 +1,4 @@
-const { MissingParamError, InvalidParamError } = require('../../utils/errors')
+const { MissingParamError } = require('../../utils/errors')
 const AuthUseCase = require('./auth-usecase')
 
 const makeEncrypter = () => {
@@ -82,27 +82,6 @@ describe('Auth UseCase', () => {
     expect(loadUserEmailOnRepoSpy.email).toBe('mail.test@mail.com')
   })
 
-  test('Should throw if no dependency is provided', async () => {
-    const sut = new AuthUseCase()
-    const promise = sut.auth('mail.test@mail.com', 'dsdfs')
-
-    expect(promise).rejects.toThrow(new MissingParamError('loadUserEmailOnRepo'))
-  })
-
-  test('Should throw if no repo is provided', async () => {
-    const sut = new AuthUseCase({})
-    const promise = sut.auth('mail.test@mail.com', 'dsdfs')
-
-    expect(promise).rejects.toThrow(new MissingParamError('loadUserEmailOnRepo'))
-  })
-
-  test('Should throw if repo has no load method', async () => {
-    const sut = new AuthUseCase({ loadUserEmailOnRepo: {} })
-    const promise = sut.auth('mail.test@mail.com', 'dsdfs')
-
-    expect(promise).rejects.toThrow(new InvalidParamError('loadUserEmailOnRepo'))
-  })
-
   test('Should return null if the repo returns an invalid email', async () => {
     const { sut, loadUserEmailOnRepoSpy } = makeSut()
     loadUserEmailOnRepoSpy.user = null
@@ -140,5 +119,23 @@ describe('Auth UseCase', () => {
 
     expect(accessToken).toBe(tokenGeneratorSpy.accessToken)
     expect(accessToken).toBeTruthy()
+  })
+
+  test('Should throw if invalid dependencies are provided', async () => {
+    const invalid = {}
+    const suts = [].concat(
+      new AuthUseCase(),
+      new AuthUseCase({
+        loadUserEmailOnRepo: null
+      }),
+      new AuthUseCase({
+        loadUserEmailOnRepo: invalid
+      })
+    )
+    for (const sut of suts) {
+      const promise = sut.auth('mail.test@mail.com', 'dsdfs')
+
+      expect(promise).rejects.toThrow()
+    }
   })
 })
