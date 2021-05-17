@@ -1,6 +1,31 @@
 const { MissingParamError } = require('../../utils/errors')
 const AuthUseCase = require('./auth-usecase')
 
+const makeLoadUserEmailOnRepo = () => {
+  class LoadUserEmailOnRepoSpy {
+    async load (email) {
+      this.email = email
+
+      return this.user
+    }
+  }
+
+  const loadUserEmailOnRepo = new LoadUserEmailOnRepoSpy()
+  loadUserEmailOnRepo.user = { password: 'hashed', id: 'userId' }
+
+  return loadUserEmailOnRepo
+}
+
+const makeLoadUserEmailOnRepoError = () => {
+  class LoadUserEmailOnRepoSpy {
+    async load () {
+      throw new Error()
+    }
+  }
+
+  return new LoadUserEmailOnRepoSpy()
+}
+
 const makeEncrypter = () => {
   class EncrypterSpy {
     async compare (password, hashedPassword) {
@@ -17,19 +42,14 @@ const makeEncrypter = () => {
   return encrypterSpy
 }
 
-const makeLoadUserEmailOnRepo = () => {
-  class LoadUserEmailOnRepoSpy {
-    async load (email) {
-      this.email = email
-
-      return this.user
+const makeEncrypterError = () => {
+  class EncrypterSpy {
+    async compare () {
+      throw new Error()
     }
   }
 
-  const loadUserEmailOnRepo = new LoadUserEmailOnRepoSpy()
-  loadUserEmailOnRepo.user = { password: 'hashed', id: 'userId' }
-
-  return loadUserEmailOnRepo
+  return new EncrypterSpy()
 }
 
 const makeTokenGenerator = () => {
@@ -45,6 +65,16 @@ const makeTokenGenerator = () => {
   tokenGeneratorSpy.accessToken = 'token'
 
   return tokenGeneratorSpy
+}
+
+const makeTokenGeneratorError = () => {
+  class TokenGeneratorSpy {
+    async generate () {
+      throw new Error()
+    }
+  }
+
+  return new TokenGeneratorSpy()
 }
 
 const makeSut = () => {
@@ -156,6 +186,33 @@ describe('Auth UseCase', () => {
         loadUserEmailOnRepo,
         encrypter: encrypter,
         tokenGenerator: invalid
+      })
+    )
+    for (const sut of suts) {
+      const promise = sut.auth('mail.test@mail.com', 'dsdfs')
+
+      expect(promise).rejects.toThrow()
+    }
+  })
+
+  test('Should throw if dependency throws Error', async () => {
+    const loadUserEmailOnRepo = makeLoadUserEmailOnRepo()
+    const encrypter = makeEncrypter()
+    const suts = [].concat(
+      new AuthUseCase({
+        loadUserEmailOnRepo: makeLoadUserEmailOnRepoError(),
+        encrypter: null,
+        tokenGenerator: null
+      }),
+      new AuthUseCase({
+        loadUserEmailOnRepo,
+        encrypter: makeEncrypterError(),
+        tokenGenerator: null
+      }),
+      new AuthUseCase({
+        loadUserEmailOnRepo,
+        encrypter,
+        tokenGenerator: makeTokenGeneratorError()
       })
     )
     for (const sut of suts) {
