@@ -183,38 +183,57 @@ describe('Auth UseCase', () => {
   test('Should throw if invalid dependencies are provided', async () => {
     const loadUserEmailOnRepo = makeLoadUserEmailOnRepo()
     const encrypter = makeEncrypter()
+    const tokenGenerator = makeTokenGenerator()
     const invalid = {}
     const suts = [].concat(
       new AuthUseCase(),
       new AuthUseCase({
         loadUserEmailOnRepo: null,
         encrypter: null,
-        tokenGenerator: null
+        tokenGenerator: null,
+        updateAccessTokenRepo: null
       }),
       new AuthUseCase({
         loadUserEmailOnRepo: invalid,
         encrypter: null,
-        tokenGenerator: null
+        tokenGenerator: null,
+        updateAccessTokenRepo: null
       }),
       new AuthUseCase({
         loadUserEmailOnRepo,
         encrypter: null,
-        tokenGenerator: null
+        tokenGenerator: null,
+        updateAccessTokenRepo: null
       }),
       new AuthUseCase({
         loadUserEmailOnRepo,
         encrypter: invalid,
-        tokenGenerator: null
+        tokenGenerator: null,
+        updateAccessTokenRepo: null
       }),
       new AuthUseCase({
         loadUserEmailOnRepo,
-        encrypter: encrypter,
-        tokenGenerator: null
+        encrypter,
+        tokenGenerator: null,
+        updateAccessTokenRepo: null
       }),
       new AuthUseCase({
         loadUserEmailOnRepo,
-        encrypter: encrypter,
-        tokenGenerator: invalid
+        encrypter,
+        tokenGenerator: invalid,
+        updateAccessTokenRepo: null
+      }),
+      new AuthUseCase({
+        loadUserEmailOnRepo,
+        encrypter,
+        tokenGenerator,
+        updateAccessTokenRepo: null
+      }),
+      new AuthUseCase({
+        loadUserEmailOnRepo,
+        encrypter,
+        tokenGenerator,
+        updateAccessTokenRepo: invalid
       })
     )
     for (const sut of suts) {
