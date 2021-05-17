@@ -51,7 +51,11 @@ const makeSut = () => {
   const encrypterSpy = makeEncrypter()
   const loadUserEmailOnRepoSpy = makeLoadUserEmailOnRepo()
   const tokenGeneratorSpy = makeTokenGenerator()
-  const sut = new AuthUseCase(loadUserEmailOnRepoSpy, encrypterSpy, tokenGeneratorSpy)
+  const sut = new AuthUseCase({
+    loadUserEmailOnRepo: loadUserEmailOnRepoSpy,
+    encrypter: encrypterSpy,
+    tokenGenerator: tokenGeneratorSpy
+  })
 
   return { sut, loadUserEmailOnRepoSpy, encrypterSpy, tokenGeneratorSpy }
 }
@@ -79,14 +83,14 @@ describe('Auth UseCase', () => {
   })
 
   test('Should throw if no repo is provided', async () => {
-    const sut = new AuthUseCase()
+    const sut = new AuthUseCase({})
     const promise = sut.auth('mail.test@mail.com', 'dsdfs')
 
     expect(promise).rejects.toThrow(new MissingParamError('loadUserEmailOnRepo'))
   })
 
   test('Should throw if repo has no load method', async () => {
-    const sut = new AuthUseCase({})
+    const sut = new AuthUseCase({ loadUserEmailOnRepo: {} })
     const promise = sut.auth('mail.test@mail.com', 'dsdfs')
 
     expect(promise).rejects.toThrow(new InvalidParamError('loadUserEmailOnRepo'))
