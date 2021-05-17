@@ -1,4 +1,5 @@
 const EmailValidator = require('./email-validator')
+const { MissingParamError } = require('../errors')
 
 const validator = require('validator')
 
@@ -28,5 +29,13 @@ describe('EmailValidator', () => {
     sut.isValid(testEmail)
 
     expect(validator.email).toBe(testEmail)
+  })
+
+  test('Should throw if no email is provided', async () => {
+    const sut = makeSut()
+
+    expect(() => { sut.isValid() }).toThrow(new MissingParamError('email'))
+    // expect(sut.isValid).toThrow(new MissingParamError('email'))
+    // When testing a method which is not async, we have to pass the pointer of the func (without the parenthesis on the method)
   })
 })
