@@ -36,8 +36,10 @@
     "husky": "^6.0.0"
   },
   "dependencies": {
+    "@shelf/jest-mongodb": "^1.2.4",
     "bcrypt": "^5.0.1",
     "jsonwebtoken": "^8.5.1",
+    "mongodb": "^3.6.7",
     "validator": "^13.6.0"
   }
 }
