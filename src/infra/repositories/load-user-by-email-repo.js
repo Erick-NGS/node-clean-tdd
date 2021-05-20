@@ -1,3 +1,5 @@
+const { MissingParamError } = require('../../utils/errors')
+
 module.exports =
   class LoadUserByEmailRepo {
     constructor (userModel) {
@@ -5,6 +7,9 @@ module.exports =
     }
 
     async load (email) {
+      if (!email) {
+        throw new MissingParamError('email')
+      }
       const user = this.userModel.findOne({
         email
       }, {
