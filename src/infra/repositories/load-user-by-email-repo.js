@@ -1,0 +1,18 @@
+module.exports =
+  class LoadUserByEmailRepo {
+    constructor (userModel) {
+      this.userModel = userModel
+    }
+
+    async load (email) {
+      const user = this.userModel.findOne({
+        email
+      }, {
+        projection: {
+          password: 1
+        }
+      })
+
+      return user
+    }
+  }
