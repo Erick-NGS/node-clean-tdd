@@ -2,7 +2,6 @@ const MongoHelper = require('../helpers/mongo-helper')
 
 let db
 
-// const makeSut = () => {
 class UpdateAccessTokenRepo {
   constructor (userModel) {
     this.userModel = userModel
@@ -18,7 +17,6 @@ class UpdateAccessTokenRepo {
     })
   }
 }
-// }
 
 describe('UpdateAccessToken Repo', () => {
   beforeAll(async () => {
@@ -50,5 +48,19 @@ describe('UpdateAccessToken Repo', () => {
     })
 
     expect(updatedInfo.accessToken).toBe('valid_token')
+  })
+
+  test('Should throw if no userModel is found', async () => {
+    const userModel = db.collection('users')
+    const fakeUser = await userModel.insertOne({
+      email: 'valid_email@mail.com',
+      password: 'hashed_pass',
+      name: 'any_name',
+      age: 25
+    })
+    const sut = new UpdateAccessTokenRepo()
+    const promise = sut.update(fakeUser.ops[0]._id, 'valid_token')
+
+    expect(promise).rejects.toThrow()
   })
 })
