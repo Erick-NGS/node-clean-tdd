@@ -2,8 +2,10 @@
   "name": "node-tdd-clean",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "src/main/index.js",
   "scripts": {
+    "start": "node src/main/index.js",
+    "dev": "nodemon src/main/index.js",
     "test": "npx standard --fix&&jest --silent --colors",
     "test:unit": "npx standard --fix&&npm test -- --watch -c jest.unit.config.js",
     "test:integ": "npx standard --fix&&npm test -- --watch -c jest.integration.config.js",
@@ -38,6 +40,7 @@
   "dependencies": {
     "@shelf/jest-mongodb": "^1.2.4",
     "bcrypt": "^5.0.1",
+    "express": "^4.17.1",
     "jsonwebtoken": "^8.5.1",
     "mongodb": "^3.6.7",
     "validator": "^13.6.0"
