@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node src/main/index.js",
     "dev": "nodemon src/main/index.js",
-    "test": "npx standard --fix&&jest --silent --colors",
+    "test": "npx standard --fix&&jest --silent --colors --runInBand",
     "test:unit": "npx standard --fix&&npm test -- --watch -c jest.unit.config.js",
     "test:integ": "npx standard --fix&&npm test -- --watch -c jest.integration.config.js",
     "test:staged": "npm test -- --findRelatedTests",
