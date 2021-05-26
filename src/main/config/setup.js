@@ -1,12 +1,7 @@
+const cors = require('../middlewares/cors')
+
 module.exports = app => {
   app.disable('x-powered-by')
 
-  app.use((req, res, next) => {
-    res.set('access-control-allow-origin', '*')
-    res.set('access-control-allow-methods', '*')
-    res.set('access-control-allow-headers', '*')
-
-    // has the purpose of not locking this middleware
-    next()
-  })
+  app.use(cors)
 }
